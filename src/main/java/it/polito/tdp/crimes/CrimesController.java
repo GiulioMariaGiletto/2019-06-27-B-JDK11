@@ -7,6 +7,7 @@ package it.polito.tdp.crimes;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.crimes.model.Adiacenza;
 import it.polito.tdp.crimes.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,16 +26,16 @@ public class CrimesController {
     private URL location;
 
     @FXML // fx:id="boxCategoria"
-    private ComboBox<?> boxCategoria; // Value injected by FXMLLoader
+    private ComboBox<String> boxCategoria; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxMese"
-    private ComboBox<?> boxMese; // Value injected by FXMLLoader
+    private ComboBox<Integer> boxMese; // Value injected by FXMLLoader
 
     @FXML // fx:id="btnAnalisi"
     private Button btnAnalisi; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxArco"
-    private ComboBox<?> boxArco; // Value injected by FXMLLoader
+    private ComboBox<Adiacenza> boxArco; // Value injected by FXMLLoader
 
     @FXML // fx:id="btnPercorso"
     private Button btnPercorso; // Value injected by FXMLLoader
@@ -46,12 +47,27 @@ public class CrimesController {
     void doCreaGrafo(ActionEvent event) {
     	txtResult.clear();
     	txtResult.appendText("Crea grafo...\n");
+    	model.creaGrafo(boxCategoria.getValue(), boxMese.getValue());
+    	txtResult.appendText(model.nArch()+"\n");
+    	txtResult.appendText(model.nVert()+"\n");
+    	for(Adiacenza a:model.pesoMedio()) {
+    		txtResult.appendText(a.toString()+"\n");
+    	}
+    	boxArco.getItems().clear();
+    	for(Adiacenza a:model.getArchi()) {
+    		boxArco.getItems().add(a);
+    	}
+    	
     }
     
     @FXML
     void doCalcolaPercorso(ActionEvent event) {
     	txtResult.clear();
     	txtResult.appendText("Calcola percorso...\n");
+    	for(String s:model.ricorsione(boxArco.getValue().reato1, boxArco.getValue().reato2)) {
+    		txtResult.appendText(s+"\n");
+    	}
+    	
     }
     
     @FXML // This method is called by the FXMLLoader when initialization is complete
@@ -67,5 +83,9 @@ public class CrimesController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	boxCategoria.getItems().addAll(model.cat());
+    	for(int i=1;i<13;i++) {
+    		boxMese.getItems().add(i);
+    	}
     }
 }
